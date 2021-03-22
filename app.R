@@ -1,12 +1,15 @@
-#
+# 
 # This is a Shiny web application. You can run the application by clicking
 # the 'Run App' button above.
 #
 # Find out more about building applications with Shiny here:
 #
 #    http://shiny.rstudio.com/
+# Referencias del codigo: 
+# https://rpubs.com/Argaadya/550805
+# https://shiny.rstudio.com/gallery/
 #
-#
+
 library(shiny)
 library(shinythemes)
 library(TSP)
@@ -24,17 +27,15 @@ library(readr)
 # User interface                   #
 ####################################
 
-# Define UI for application that draws a histogram
+# Define UI for application 
 ui <- fluidPage( 
   
   shinythemes::themeSelector(),
-  # Application title
-  #titlePanel("Old Faithful Geyser Data"),
-  #tags$head("Old Faithful Geyser Data" ),
+ 
   tags$h2("Artículo CII 2021: Analítica Gis"),
   theme = "cerulean", 
   
-  # Sidebar with a slider input for number of bins 
+  # Sidebar
   sidebarLayout(position = "left",
                 
                 sidebarPanel(
@@ -165,9 +166,7 @@ server <- function(input, output, session) {
   }
   beneficio <- data.frame(beneficio)
   #print(beneficio)
-  beneficio$Cantidad_de_repartos <- 10:30 ## el valor es el que se muestra
-  ## en el eje X, es decir tiene que ser consistente con el valor del slider
-  ## NO debe ser entre 1 y 21
+  beneficio$Cantidad_de_repartos <- 10:30 ## el valor es el que se muestra en el eje X
   ## 
   
   beneficio$yvar <- 1:21
@@ -182,7 +181,7 @@ server <- function(input, output, session) {
     output$newmap <- renderLeaflet({
       
       n<-input$integer+1
-      # Tibble containing the geographic locations for our TSP problem
+      #
       data3 <- tibble(
         id = 1:n,
         lng = rnorm(n, mean = -77.0055, sd = 0.005),
@@ -198,13 +197,11 @@ server <- function(input, output, session) {
       dist_mat <- dist(data3%>%select(lng,lat),
                        method = 'euclidean' 
       )
-      # Initialize the TSP object
+      # TSP object
       tsp_prob <- TSP(dist_mat)
       
-      # We add a dummy to the TSP, in this way we remove the constraint of 
-      # having a path that ends at the starting point
+      
       tsp_prob <- insert_dummy(tsp_prob, label = 'dummy')
-      #??solve_TSP
       
       # TSP solver
       tour <- solve_TSP(
@@ -216,7 +213,7 @@ server <- function(input, output, session) {
       
       
       #str(tour)
-      # Prepare the data for plotting
+      # Plotting
       data3 %<>% 
         mutate(
           id_order = order(as.integer(path))
@@ -272,7 +269,7 @@ server <- function(input, output, session) {
     
   })
   
-  # Show the values in an HTML table ----
+  
   output$values2 <- renderTable({
     sliderValues2()
   })
@@ -283,8 +280,7 @@ server <- function(input, output, session) {
     hist(rnorm(input$bins))
   })
   
-  #data3 <- read.csv(paste("jat3", ".csv", sep=""), header = TRUE, col.names = tbl_colnames)
-  
+   
   # Ejecuta el datasetInput que genera el comportamiento
   output$newmap <- renderLeaflet({
     if (input$submitbutton>0) { 
@@ -292,7 +288,7 @@ server <- function(input, output, session) {
     } else {
       
       n<-input$bins +1
-      # Tibble containing the geographic locations for our TSP problem
+      # 
       data3 <- tibble(
         id = 1:n,
         lng = rnorm(n, mean = -77.0055, sd = 0.005),
@@ -311,12 +307,9 @@ server <- function(input, output, session) {
       # Initialize the TSP object
       tsp_prob <- TSP(dist_mat)
       
-      # We add a dummy to the TSP, in this way we remove the constraint of 
-      # having a path that ends at the starting point
-      tsp_prob <- insert_dummy(tsp_prob, label = 'dummy')
-      #??solve_TSP
       
-      # TSP solver
+      tsp_prob <- insert_dummy(tsp_prob, label = 'dummy')
+      
       tour <- solve_TSP(
         tsp_prob,
         method = 'two_opt',
@@ -324,8 +317,8 @@ server <- function(input, output, session) {
       )
       path <- names(cut_tour(tour, 'dummy'))
       
-      #str(tour)
-      # Prepare the data for plotting
+   
+   
       data3 %<>% 
         mutate(
           id_order = order(as.integer(path))
