@@ -30,7 +30,7 @@ library(readr)
 # Define UI for application 
 ui <- fluidPage( 
   
-  shinythemes::themeSelector(),
+  
  
   tags$h2("Artículo CII 2021: Analítica Gis"),
   theme = "cerulean", 
